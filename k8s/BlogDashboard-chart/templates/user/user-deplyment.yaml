@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.aiquser.app }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.aiquser.app }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.aiquser.app }}
+  replicas: {{ .Values.aiquser.replicas }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.aiquser.app }}
+    spec:
+      containers:
+        - name: {{ .Values.aiquser.app }}
+          image: {{ .Values.aiquser.image }}
+          imagePullPolicy: {{ .Values.aiquser.imagePullPolicy }}
+          resources:
+            requests:
+              cpu: {{ .Values.aiquser.resources.requests.cpu }}
+              memory: {{ .Values.aiquser.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.aiquser.resources.limits.cpu }}
+              memory: {{ .Values.aiquser.resources.limits.memory }}
+          env:
+            - name: MONGO
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secrets
+                  key: MONGO
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secrets
+                  key: JWT_SECRET
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.aiquser.port }}
+            initialDelaySeconds: {{ .Values.aiquser.livenessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.aiquser.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.aiquser.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.aiquser.livenessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.aiquser.livenessProbe.periodSeconds }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.aiquser.port }}
+            initialDelaySeconds: {{ .Values.aiquser.readinessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.aiquser.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.aiquser.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.aiquser.readinessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.aiquser.readinessProbe.periodSeconds }}
+          ports:
+            - containerPort: {{ .Values.aiquser.port }}
+      restartPolicy: {{ .Values.aiquser.restartPolicy }}

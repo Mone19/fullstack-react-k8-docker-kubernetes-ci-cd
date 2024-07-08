@@ -1,0 +1,59 @@
+name: Release Helm Chart
+
+on:
+  push:
+   branches:
+    - main
+   
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v3
+
+    - name: Package Helm chart
+      run: helm package k8s/BlogDashboard-chart --destination .deploy
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+    - name: Initialize Terraform
+      run: terraform init
+      working-directory: ./infra_s3
+
+    - name: Apply Terraform
+      id: apply_terraform
+      run: terraform apply -auto-approve
+      working-directory: ./infra_s3
+
+    - name: Generate Helm repo index
+      run: helm repo index .deploy --url https://helmchart.s3.amazonaws.com/charts
+
+    - name: Sync chart files to S3
+      run: |
+        aws s3 sync .deploy s3://helmchart/charts --delete
+
+    - name: Sync index.yaml to S3
+      run: |
+        aws s3 cp .deploy/index.yaml s3://helmchart/index.yaml
+
+    - name: Clean up
+      run: rm -rf .deploy
+
+
+      
+

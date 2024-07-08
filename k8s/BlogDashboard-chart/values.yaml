@@ -1,0 +1,98 @@
+namespace: default
+
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 20
+
+
+aiqauth:
+  app: aiqauth
+  replicas: 1
+  port: 4000
+  restartPolicy: Always
+  image: docker.io/kpblm256/aiq-auth:1.3.3
+  imagePullPolicy: Always
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "100Mi"
+    limits:
+      cpu: "100m"
+      memory: "100Mi"
+  livenessProbe:
+    initialDelaySeconds: 5
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+    periodSeconds: 10
+  service:
+    name: aiqauth
+    type: ClusterIP
+    port: 4000
+    targetPort: 4000
+
+aiqpost:
+  app: aiqpost
+  replicas: 1
+  port: 4003
+  restartPolicy: Always
+  image: docker.io/kpblm256/aiq-post:1.3.3
+  imagePullPolicy: Always
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+  livenessProbe:
+    initialDelaySeconds: 5
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+    periodSeconds: 10
+  readinessProbe:
+    initialDelaySeconds: 5
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+    periodSeconds: 10
+  service:
+    name: aiqpost
+    type: ClusterIP
+    port: 4003
+    targetPort: 4003
+
+aiquser:
+  app: aiquser
+  replicas: 1
+  port: 4001
+  restartPolicy: Always
+  image: docker.io/kpblm256/aiq-user:1.3.3
+  imagePullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "100Mi"
+    limits:
+      cpu: "100m"
+      memory: "100Mi"
+  livenessProbe:
+    initialDelaySeconds: 5
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+    periodSeconds: 10
+  readinessProbe:
+    initialDelaySeconds: 5
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+    periodSeconds: 10
+  service:
+    name: aiquser
+    type: ClusterIP
+    port: 4001
+    targetPort: 4001

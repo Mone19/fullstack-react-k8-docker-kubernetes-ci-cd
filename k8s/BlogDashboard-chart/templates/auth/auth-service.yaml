@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.aiqauth.service.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: {{ .Values.aiqauth.app }}
+  type: {{ .Values.aiqauth.service.type }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.aiqauth.service.port }}
+      targetPort: {{ .Values.aiqauth.service.targetPort }}

@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: blog-dashboard
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "https://helmchart.s3.amazonaws.com/charts"
+    chart: "BlogDashborad-chart"
+    targetRevision: "*"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

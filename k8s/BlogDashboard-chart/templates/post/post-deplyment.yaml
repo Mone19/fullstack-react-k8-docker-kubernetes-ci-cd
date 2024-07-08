@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiqpost
+  namespace: default
+  labels:
+    app: aiqpost
+spec:
+  selector:
+    matchLabels:
+      app: aiqpost
+  replicas: {{ .Values.aiqpost.replicas }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: aiqpost
+    spec:
+      containers:
+        - name: aiqpost
+          image: {{ .Values.aiqpost.image }}
+          imagePullPolicy: {{ .Values.aiqpost.imagePullPolicy }}
+          resources:
+            requests:
+              cpu: {{ .Values.aiqpost.resources.requests.cpu }}
+              memory: {{ .Values.aiqpost.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.aiqpost.resources.limits.cpu }}
+              memory: {{ .Values.aiqpost.resources.limits.memory }}
+          env:
+            - name: MONGO
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secrets
+                  key: MONGO
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secrets
+                  key: JWT_SECRET
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.aiqpost.port }}
+            initialDelaySeconds: {{ .Values.aiqpost.livenessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.aiqpost.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.aiqpost.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.aiqpost.livenessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.aiqpost.livenessProbe.periodSeconds }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.aiqpost.port }}
+            initialDelaySeconds: {{ .Values.aiqpost.readinessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.aiqpost.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.aiqpost.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.aiqpost.readinessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.aiqpost.readinessProbe.periodSeconds }}
+          ports:
+            - containerPort: {{ .Values.aiqpost.port }}
+      restartPolicy: {{ .Values.aiqpost.restartPolicy }}

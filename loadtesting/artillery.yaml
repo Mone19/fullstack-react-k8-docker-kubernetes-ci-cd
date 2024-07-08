@@ -1,0 +1,19 @@
+config:
+  target: "https://www.aiq-blog.de"
+  phases:
+      - duration: 120
+        arrivalRate: 5
+        name: "Warm-up Phase"
+      - duration: 300
+        arrivalRate: 10
+        rampTo: 50
+        name: "Lasttest Phase"
+      - duration: 120
+        arrivalRate: 5
+        name: "Cooldown Phase"
+
+scenarios:
+  - flow:
+        - log: "Making request to aiq-blog"
+        - get:
+            url: "/"

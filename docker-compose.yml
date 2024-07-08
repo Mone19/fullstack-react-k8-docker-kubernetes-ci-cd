@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+
+  frontend:
+    build: ./client
+    ports:
+      - "80:80"
+  
+  auth:
+    build: ./api/auth
+    env_file: ./api/auth/.env
+    ports:
+      - "4000:4000"
+    # depends_on:
+    #   - user
+    environment:
+      - MONGODB_URI=${MONGO}
+      - JWT_SECRET=${JWT_SECRET}
+
+  user:
+    build: ./api/user
+    env_file: ./api/user/.env
+    ports:
+      - "4001:4001"
+    # depends_on:
+    #   - post
+    environment:
+      - MONGODB_URI=${MONGO}
+      - JWT_SECRET=${JWT_SECRET}
+
+  post:
+    build: ./api/post
+    env_file: ./api/post/.env
+    ports:
+      - "4003:4003"
+    # depends_on:
+    #   - user
+    environment:
+      - MONGODB_URI=${MONGO}
+      - JWT_SECRET=${JWT_SECRET}

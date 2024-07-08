@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.aiquser.service.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: {{ .Values.aiquser.app }}
+  type: {{ .Values.aiquser.service.type }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.aiquser.service.port }}
+      targetPort: {{ .Values.aiquser.service.targetPort }}
