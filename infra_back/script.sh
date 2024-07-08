@@ -36,7 +36,7 @@ echo "Retrieved admin password: $ADMIN_PASSWORD"
 echo "Attempting to log in to ArgoCD..."
 LOGIN_SUCCESS=0
 while [ $LOGIN_SUCCESS -eq 0 ]; do
-    if echo "y" | argocd login "$EXTERNAL_IP" --username admin --password "$ADMIN_PASSWORD"; then
+    if echo "y" | argocd login "$EXTERNAL_IP" --username "$ADMIN_NAME" --password "$ADMIN_PASSWORD"; then
         LOGIN_SUCCESS=1
         echo "Successfully logged in to ArgoCD."
     else
